@@ -34,6 +34,7 @@ namespace VisualSearchApp
     public class ApiKeys
     {
         public static string computerVisionKey = String.Empty;
+        public static string computerVisionHostSrv = String.Empty;
         public static string bingSearchKey = String.Empty;
     }
 }

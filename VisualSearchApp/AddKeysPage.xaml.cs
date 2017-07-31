@@ -15,14 +15,23 @@ namespace VisualSearchApp
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class AddKeysPage : ContentPage
 	{
+        #region constants
+        // The media type of the body sent to the API. "application/octet-stream" defines an image represented as a byte array
+        const string PhotoContentType = "application/octet-stream";
+        const string SubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
+        // URIs of the endpoints used in the test requests
+        const string searchUri = "https://api.cognitive.microsoft.com/bing/v5.0/search?q=test";
+        #endregion
+
+        #region fields
         // booleans set when the keys are proven to work
         private bool computerVisionKeyWorks = false;
         private bool bingSearchKeyWorks = false;
+        private string endpointLoc = String.Empty;
+        HttpClient VisionApiClient;
+        #endregion
 
-        // URIs of the endpoints used in the test requests
-        private string ocrUri = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0/ocr?";
-        private string searchUri = "https://api.cognitive.microsoft.com/bing/v5.0/search?q=test";
-
+        
         public AddKeysPage ()
 		{
 			InitializeComponent();
@@ -33,16 +42,14 @@ namespace VisualSearchApp
         {
             // Empty image for test OCR request
             byte[] emptyImage = new byte[10];
-
             HttpResponseMessage response;
-            HttpClient VisionApiClient = new HttpClient();
+            VisionApiClient = new HttpClient();
 
-            VisionApiClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", ComputerVisionKeyEntry.Text);
+            VisionApiClient.DefaultRequestHeaders.Add(SubscriptionKeyHeader, ComputerVisionKeyEntry.Text);
             using (var content = new ByteArrayContent(emptyImage))
             {
-                // The media type of the body sent to the API. "application/octet-stream" defines an image represented as a byte array
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-                response = await VisionApiClient.PostAsync(ocrUri, content);
+                content.Headers.ContentType = new MediaTypeHeaderValue(PhotoContentType);
+                response = await VisionApiClient.PostAsync($"https://{endpointLoc}.api.cognitive.microsoft.com/vision/v1.0/ocr?", content);
             }
             if ((int)response.StatusCode != 401)
             {
@@ -79,6 +86,16 @@ namespace VisualSearchApp
             }
         }
 
+        void OnPickerSelectedIndexChanged(object sender, EventArgs e)
+        {
+            var picker = (Picker)sender;
+            int selectedIndex = picker.SelectedIndex;
+
+            if (selectedIndex != -1)
+            {
+                endpointLoc = picker.Items[selectedIndex];
+            }
+        }
 
         async void TryToAddKeys(object sender, EventArgs e)
         {

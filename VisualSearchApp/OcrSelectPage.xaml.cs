@@ -23,29 +23,28 @@ namespace VisualSearchApp
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class OcrSelectPage : TabbedPage
     {
-        private bool isFirstPageLoad = true;
-
+        #region constructors
         public OcrSelectPage()
         {
             InitializeComponent();
             CrossMedia.Current.Initialize();
         }
+        #endregion
 
-        // Overrides Page.OnAppearing
+        #region overrides
         // If no keys are found in the App.xaml.cs file, a window will appear for manual entry
         protected override async void OnAppearing()
         {
-            if (isFirstPageLoad)
+            base.OnAppearing();
+            if (!(ApiKeys.computerVisionKey.Any() && ApiKeys.bingSearchKey.Any()))
             {
-                if ((!ApiKeys.computerVisionKey.Any()) || (!ApiKeys.bingSearchKey.Any()))
-                {
-                    await Navigation.PushModalAsync(new AddKeysPage());
-                }
+                await Navigation.PushModalAsync(new AddKeysPage());
             }
-            this.isFirstPageLoad = false;
         }
+        #endregion
 
-        // Called when Take Photo is pressed from the standard and handwritten OCR page
+        #region methods
+        // Called when the Take Photo button is pressed
         async void TakePhotoButtonClickEventHandler(object sender, EventArgs e)
         {
             byte[] photoByteArray = null;
@@ -129,6 +128,6 @@ namespace VisualSearchApp
                 return memStream.ToArray();
             }
         }
-            
+        #endregion    
     }
 }

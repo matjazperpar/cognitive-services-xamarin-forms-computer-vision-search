@@ -11,8 +11,14 @@ namespace VisualSearchApp
         public App()
         {
             InitializeComponent();
-            //ApiKeys.computerVisionKey = <Add Your Cognitive Services Vision API Key Here>;
-            //ApiKeys.bingSearchKey = <Add Your Bing Search API Key Here>;
+            // Your Cognitive Services Computer Vision API Key
+            ApiKeys.computerVisionKey = "ea92a833d0f1467ab9c333c91bbd5942";
+
+            // The code for where your endpoint is hosted: westus, eastus2, westcentralus, westeurope, souteheastasia
+            ApiKeys.computerVisionHostSrv = "westcentralus"
+
+            // Your Bing Web Search API Key
+            ApiKeys.bingSearchKey = "c814652007004968837bbdb807408dbf";
 
             MainPage = new NavigationPage(new OcrSelectPage());
         }
